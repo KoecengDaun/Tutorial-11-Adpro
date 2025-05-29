@@ -1,3 +1,5 @@
+# Bagian 1
+
 ## **1. Perbandingan Application Logs Sebelum dan Sesudah Exposed sebagai Service**
 
 ### **Sebelum di-expose sebagai Service:**
@@ -67,3 +69,64 @@ Karena:
   - `metrics-server` (monitoring)
 
 **Analogi:** Namespace seperti "folder" yang memisahkan resources. Aplikasi ada di folder "default", sedangkan sistem Kubernetes ada di folder "kube-system".
+
+# Bagian 2
+
+## **1. Perbedaan antara Rolling Update dan Recreate Deployment Strategy**
+
+### **Rolling Update (Default):**
+- **Proses:** Mengganti pod secara bertahap, satu per satu atau beberapa sekaligus
+- **Downtime:** **Tidak ada downtime** - aplikasi tetap bisa diakses selama update
+- **Cara kerja:** 
+  - Buat pod baru dengan versi terbaru
+  - Tunggu pod baru siap
+  - Hapus pod lama
+  - Ulangi sampai semua pod terupdate
+- **Keuntungan:** Zero downtime, rollback mudah
+- **Kekurangan:** Proses lebih lambat, konsumsi resource lebih tinggi sementara
+
+### **Recreate Strategy:**
+- **Proses:** Menghapus semua pod lama sekaligus, baru buat pod baru
+- **Downtime:** **Ada downtime** - aplikasi tidak bisa diakses selama update
+- **Cara kerja:**
+  - Hapus semua pod lama sekaligus
+  - Buat semua pod baru dengan versi terbaru
+- **Keuntungan:** Proses lebih cepat, konsumsi resource lebih rendah
+- **Kekurangan:** Ada downtime, tidak cocok untuk production
+
+---
+
+## **2. Manfaat Kubernetes Manifest Files**
+
+### **Perbandingan Deploy Manual vs Manifest Files:**
+
+#### **Deploy Manual (kubectl create/expose):**
+**Kelebihan:**
+- Cepat untuk testing atau pembelajaran
+- Tidak perlu membuat file terpisah
+- Langsung eksekusi tanpa persiapan
+
+**Kekurangan:**
+- Tidak reproducible - sulit mengulangi deployment yang sama
+- Tidak ada version control untuk konfigurasi
+- Sulit untuk deployment yang kompleks
+- Rawan human error saat mengetik command panjang
+- Tidak bisa di-review sebelum deploy
+
+#### **Manifest Files (kubectl apply -f):**
+**Kelebihan:**
+- **Reproducible:** Deployment bisa diulang dengan hasil yang sama
+- **Version Control:** File bisa disimpan di Git untuk tracking perubahan
+- **Declarative:** Mendeskripsikan "apa yang diinginkan" bukan "bagaimana melakukannya"
+- **Review Process:** File bisa di-review sebelum deployment
+- **Backup & Documentation:** File adalah dokumentasi hidup dari konfigurasi
+- **Complex Deployments:** Mudah untuk deployment yang kompleks dengan banyak resources
+- **CI/CD Integration:** Mudah diintegrasikan dengan pipeline automation
+- **Rollback:** Mudah rollback ke versi konfigurasi sebelumnya
+
+**Kekurangan:**
+- Perlu waktu untuk membuat dan maintain file
+- Learning curve untuk syntax YAML
+
+### **Kesimpulan:**
+Untuk development dan production, **manifest files lebih direkomendasikan** karena memberikan konsistensi, repeatability, dan kemudahan maintenance. Deploy manual cocok hanya untuk quick testing atau pembelajaran awal.
